@@ -15,7 +15,7 @@ export default function ProfileImage() {
   if (!mounted) {
     return (
       <Image
-        src="/images/profile-cat-light.png"
+        src="/images/profile-medical-light.png"
         alt="cat"
         width={144}
         height={144}
@@ -26,7 +26,9 @@ export default function ProfileImage() {
 
   return (
     <Image
-      src={theme === 'light' ? '/images/profile-cat-light.png' : '/images/profile-cat-dark.png'}
+      src={
+        theme === 'light' ? '/images/profile-medical-light.png' : '/images/profile-medical-dark.png'
+      }
       alt="cat"
       width={144}
       height={144}
