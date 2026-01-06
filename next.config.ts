@@ -1,6 +1,5 @@
 import type { NextConfig } from 'next';
 import createMDX from '@next/mdx';
-import rehypeSanitize from 'rehype-sanitize';
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -20,11 +19,8 @@ const nextConfig: NextConfig = {
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'mdx', 'md'],
 };
 
-const withMDX = createMDX({
-  //필요한 마크다운 플러그인 추가할수 있음
-  options: {
-    rehypePlugins: [rehypeSanitize],
-  },
-});
+// 노션 마크다운은 next-mdx-remote-client로 처리하므로
+// @next/mdx 옵션은 최소화 (옵션 없이 사용 시 직렬화 문제 해결)
+const withMDX = createMDX();
 
 export default withMDX(nextConfig);

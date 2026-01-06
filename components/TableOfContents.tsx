@@ -96,18 +96,23 @@ export default function TableOfContents({ toc }: TableOfContentsProps) {
         setActiveId(visibleHeadings[0].target.id);
       } else {
         // 뷰포트에 보이는 헤딩이 없으면, 스크롤 위치를 기준으로 가장 가까운 헤딩을 찾음
-        let closestHeading: { id: string; distance: number } | null = null;
+        interface ClosestHeading {
+          id: string;
+          distance: number;
+        }
+        let closestHeading: ClosestHeading | null = null;
 
-        entries.forEach((entry) => {
+        for (const entry of entries) {
           const rect = entry.boundingClientRect;
+          const targetId = entry.target.id;
           // 뷰포트 상단보다 위에 있는 요소 중 가장 가까운 것
-          if (rect.top <= 150) {
+          if (rect.top <= 150 && targetId) {
             const distance = Math.abs(rect.top - 100);
             if (!closestHeading || distance < closestHeading.distance) {
-              closestHeading = { id: entry.target.id, distance };
+              closestHeading = { id: targetId, distance };
             }
           }
-        });
+        }
 
         if (closestHeading) {
           setActiveId(closestHeading.id);
