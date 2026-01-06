@@ -40,15 +40,15 @@ export function PostCard({ post, isFirst = false }: PostCardProps) {
             </Badge>
           ))}
         </div>
-        <h2 className="group-hover:text-primary mb-2 text-xl font-bold tracking-tight transition-colors">
+        <h2 className="group-hover:text-primary mb-2 text-2xl font-bold tracking-tight transition-colors">
           {post.title}
         </h2>
         {post.description && (
-          <p className="text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
+          <p className="text-muted-foreground mt-2 line-clamp-2 leading-relaxed text-base">
             {post.description}
           </p>
         )}
-        <div className="text-muted-foreground mt-6 flex items-center gap-x-4 text-sm">
+        <div className="text-muted-foreground mt-6 flex items-center gap-x-4 text-base">
           {post.author && (
             <div className="flex items-center gap-1.5">
               <User className="h-4 w-4" />

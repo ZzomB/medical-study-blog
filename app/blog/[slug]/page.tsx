@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { CalendarDays, User } from 'lucide-react';
@@ -13,6 +14,7 @@ import withSlugs from 'rehype-slug';
 import withToc from '@stefanprobst/rehype-extract-toc';
 import withTocExport from '@stefanprobst/rehype-extract-toc/mdx';
 import GiscusComments from '@/components/GiscusComments';
+import TableOfContents from '@/components/TableOfContents';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 
@@ -31,24 +33,56 @@ export async function generateMetadata({
     };
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+  const postUrl = `${baseUrl}/blog/${slug}`;
+  const description = post.description || `${post.title} - Joos Blog`;
+
   return {
     title: post.title,
-    description: post.description || `${post.title} - Joos Blog`,
+    description,
     keywords: post.tags,
     authors: [{ name: post.author || 'Joo' }],
     publisher: 'Joo',
     alternates: {
-      canonical: `/blog/${slug}`,
+      canonical: postUrl,
     },
     openGraph: {
       title: post.title,
-      description: post.description,
-      url: `/blog/${post.slug}`,
+      description,
+      url: postUrl,
+      siteName: 'Joos Blog',
       type: 'article',
       publishedTime: post.date,
-      modifiedTime: post.date,
-      authors: post.author || 'joo',
+      modifiedTime: post.modifiedDate || post.date,
+      authors: [post.author || 'Joo'],
       tags: post.tags,
+      images: post.coverImage
+        ? [
+            {
+              url: post.coverImage,
+              width: 1200,
+              height: 630,
+              alt: post.title,
+            },
+          ]
+        : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description,
+      images: post.coverImage ? [post.coverImage] : [],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   };
 }
@@ -66,27 +100,6 @@ export const generateStaticParams = async () => {
 };
 
 export const revalidate = 60; // 1분마다 캐시 재검증
-
-function TableOfContentsLink({ item }: { item: TocEntry }) {
-  return (
-    <div className="space-y-2">
-      <Link
-        key={item.id}
-        href={`#${item.id}`}
-        className="hover:text-foreground text-muted-foreground block font-medium transition-colors"
-      >
-        {item.value}
-      </Link>
-      {item.children && item.children.length > 0 && (
-        <div className="space-y-2 pl-4">
-          {item.children.map((subItem) => (
-            <TableOfContentsLink key={subItem.id} item={subItem} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 interface BlogPostProps {
   params: Promise<{ slug: string }>;
@@ -110,78 +123,127 @@ export default async function BlogPost({ params }: BlogPostProps) {
     ],
   });
 
+  // 구조화된 데이터 (Schema.org JSON-LD)
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+  const postUrl = `${baseUrl}/blog/${slug}`;
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.description || `${post.title} - Joos Blog`,
+    image: post.coverImage ? [post.coverImage] : [],
+    datePublished: post.date,
+    dateModified: post.modifiedDate || post.date,
+    author: {
+      '@type': 'Person',
+      name: post.author || 'Joo',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Joos Blog',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${baseUrl}/og-image.png`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': postUrl,
+    },
+    keywords: post.tags?.join(', '),
+    articleSection: 'Blog',
+    inLanguage: 'ko',
+  };
+
   return (
-    <div className="container py-6 md:py-12 lg:py-12">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-[240px_1fr_240px] md:gap-8">
-        <aside className="hidden md:block">{/* 추후콘텐츠 추가 */}</aside>
-        <section className="overflow-hidden">
-          {/* 블로그 헤더 */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex gap-2">
-                {post.tags?.map((tag) => (
-                  <Badge key={tag}>{tag}</Badge>
-                ))}
+    <>
+      {/* 구조화된 데이터 */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <div className="py-6 md:py-12 lg:py-12">
+        <div className="mx-auto max-w-7xl px-4 lg:max-w-screen-2xl lg:px-8">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-[240px_1fr_240px] md:gap-8 lg:grid-cols-[260px_1fr_260px] lg:gap-12">
+            <aside className="hidden md:block">{/* 추후콘텐츠 추가 */}</aside>
+            <section className="overflow-hidden">
+              {/* 블로그 헤더 */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    {post.tags?.map((tag) => (
+                      <Badge key={tag}>{tag}</Badge>
+                    ))}
+                  </div>
+                  <h1 className="text-3xl font-bold md:text-4xl">{post.title}</h1>
+                </div>
+
+                {/* 메타 정보 */}
+                <div className="text-muted-foreground flex gap-4 text-sm">
+                  <div className="flex items-center gap-1">
+                    <User className="h-4 w-4" />
+                    <span>{post.author}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <CalendarDays className="h-4 w-4" />
+                    <span>{post.date ? formatDate(post.date) : ''}</span>
+                  </div>
+                </div>
               </div>
-              <h1 className="text-3xl font-bold md:text-4xl">{post.title}</h1>
-            </div>
 
-            {/* 메타 정보 */}
-            <div className="text-muted-foreground flex gap-4 text-sm">
-              <div className="flex items-center gap-1">
-                <User className="h-4 w-4" />
-                <span>{post.author}</span>
+              {/* 썸네일 이미지 */}
+              {post.coverImage && (
+                <div className="relative mt-8 mb-8 aspect-[16/9] w-full overflow-hidden rounded-lg shadow-lg">
+                  <Image
+                    src={post.coverImage}
+                    alt={post.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                    priority
+                    className="object-cover"
+                  />
+                </div>
+              )}
+
+              <Separator className="my-8" />
+              {/* 모바일 전용 목차 */}
+              <div className="sticky top-[var(--sticky-top)] mb-6 md:hidden">
+                <details className="bg-muted/60 rounded-lg p-4 backdrop-blur-sm">
+                  <summary className="cursor-pointer text-lg font-semibold">목차</summary>
+                  <div className="mt-3">
+                    {data?.toc && <TableOfContents toc={data.toc as TocEntry[]} />}
+                  </div>
+                </details>
               </div>
-              <div className="flex items-center gap-1">
-                <CalendarDays className="h-4 w-4" />
-                <span>{post.date ? formatDate(post.date) : ''}</span>
+
+              {/* 블로그 본문 */}
+              <div className="prose prose-slate dark:prose-invert prose-headings:scroll-mt-[var(--header-height)] prose-lg prose-p:leading-relaxed max-w-none">
+                <MDXRemote
+                  source={markdown}
+                  options={{
+                    mdxOptions: {
+                      rehypePlugins: [rehypeSanitize, rehypePrettycode, rehypeSlug],
+                    },
+                  }}
+                />
               </div>
-            </div>
-          </div>
 
-          <Separator className="my-8" />
-          {/* 모바일 전용 목차 */}
-          <div className="sticky top-[var(--sticky-top)] mb-6 md:hidden">
-            <details className="bg-muted/60 rounded-lg p-4 backdrop-blur-sm">
-              <summary className="cursor-pointer text-lg font-semibold">목차</summary>
-              <nav className="mt-3 space-y-3 text-sm">
-                {data?.toc?.map((item: TocEntry) => (
-                  <TableOfContentsLink key={item.id} item={item} />
-                ))}
-              </nav>
-            </details>
-          </div>
+              <Separator className="my-16" />
 
-          {/* 블로그 본문 */}
-          <div className="prose prose-slate dark:prose-invert prose-headings:scroll-mt-[var(--header-height)] max-w-none">
-            <MDXRemote
-              source={markdown}
-              options={{
-                mdxOptions: {
-                  rehypePlugins: [rehypeSanitize, rehypePrettycode, rehypeSlug],
-                },
-              }}
-            />
+              {/* 이전/다음 포스트 네비게이션 */}
+              <GiscusComments />
+            </section>
+            <aside className="relative hidden md:block">
+              <div className="sticky top-[var(--sticky-top)]">
+                <div className="bg-muted/50 space-y-4 rounded-lg p-6 backdrop-blur-sm">
+                  <h3 className="text-xl font-semibold">목차</h3>
+                  {data?.toc && <TableOfContents toc={data.toc as TocEntry[]} />}
+                </div>
+              </div>
+            </aside>
           </div>
-
-          <Separator className="my-16" />
-
-          {/* 이전/다음 포스트 네비게이션 */}
-          <GiscusComments />
-        </section>
-        <aside className="relative hidden md:block">
-          <div className="sticky top-[var(--sticky-top)]">
-            <div className="bg-muted/50 space-y-4 rounded-lg p-6 backdrop-blur-sm">
-              <h3 className="text-lg font-semibold">목차</h3>
-              <nav className="space-y-3 text-sm">
-                {data?.toc?.map((item) => (
-                  <TableOfContentsLink key={item.id} item={item} />
-                ))}
-              </nav>
-            </div>
-          </div>
-        </aside>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

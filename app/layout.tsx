@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: '%s | Joos Blog',
     default: 'Joos Blog',
   },
-  description: 'for test real activating notion based blog',
+  description: 'Next.js와 Notion을 활용한 기술 블로그',
   keywords: ['Next.js', '프론트엔드', '웹개발', '코딩', '프로그래밍', '리액트'],
   authors: [{ name: 'Joo', url: 'https://github.com/ZzomB' }],
   creator: 'Joo',
@@ -34,6 +34,22 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  openGraph: {
+    type: 'website',
+    locale: 'ko_KR',
+    siteName: 'Joos Blog',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -42,7 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="ko" className="scroll-smooth" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
           <div className="flex min-h-screen flex-col">

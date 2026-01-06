@@ -22,7 +22,7 @@ export default function TagSection({ tags, selectedTag }: TagSectionProps) {
             return (
               <Link href={href} key={tag.id}>
                 <div
-                  className={`flex items-center justify-between rounded-md p-1.5 text-sm transition-colors ${
+                  className={`flex items-center justify-between rounded-md p-1.5 text-base transition-colors ${
                     isSelected
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:bg-muted-foreground/10'
