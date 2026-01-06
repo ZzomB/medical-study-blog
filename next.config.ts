@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next';
-import createMDX from '@next/mdx';
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -16,11 +15,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'mdx', 'md'],
+  // 노션 마크다운은 next-mdx-remote-client로 처리하므로
+  // @next/mdx 설정 제거 (직렬화 문제 해결)
+  pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
 };
 
-// 노션 마크다운은 next-mdx-remote-client로 처리하므로
-// @next/mdx 옵션은 최소화 (옵션 없이 사용 시 직렬화 문제 해결)
-const withMDX = createMDX();
-
-export default withMDX(nextConfig);
+export default nextConfig;
