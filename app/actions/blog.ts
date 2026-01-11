@@ -56,7 +56,7 @@ export async function createPostAction(prevState: PostFormState, formData: FormD
       tags: tag,
       content: content,
     });
-    revalidateTag('posts', 'page');
+    revalidateTag('posts');
     return {
       success: true,
       message: '블로그 포스트가 성공적으로 생성되었습니다.',

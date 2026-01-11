@@ -59,9 +59,34 @@ NEXT_PUBLIC_NAVER_SITE_VERIFICATION=your_naver_verification_code
 
 **메타 태그 방법 사용 시:**
 
-1. 구글에서 제공한 메타 태그 코드 복사 (예: `<meta name="google-site-verification" content="..." />`)
-2. `components/SEOHead.tsx` 파일 열기
-3. 주석 처리된 구글 검증 부분에 코드 추가
+1. 구글에서 제공한 메타 태그 코드에서 `content` 속성의 값만 복사
+   - 예: `<meta name="google-site-verification" content="nFgS7btD68gcf1zu0nK_B6CNbTZrtDwAXnu0QoqFvAw" />`
+   - 여기서 `nFgS7btD68gcf1zu0nK_B6CNbTZrtDwAXnu0QoqFvAw` 부분만 복사
+
+2. `app/layout.tsx` 파일 열기
+
+3. `metadata` 객체 내에 `verification` 필드 추가:
+
+   ```typescript
+   export const metadata: Metadata = {
+     // ... 기존 설정들 ...
+     verification: {
+       google: '여기에_구글에서_받은_코드_붙여넣기',
+     },
+   };
+   ```
+
+   예시:
+
+   ```typescript
+   verification: {
+     google: 'nFgS7btD68gcf1zu0nK_B6CNbTZrtDwAXnu0QoqFvAw',
+   },
+   ```
+
+4. 저장 후 빌드 및 배포
+
+5. 구글 검색콘솔로 돌아가서 "확인" 버튼 클릭
 
 #### 2-4. Sitemap 제출
 

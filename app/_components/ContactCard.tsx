@@ -1,32 +1,8 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import {
-  Github,
-  Instagram,
-  Mail,
-  Linkedin,
-  Facebook,
-  Youtube,
-  Globe,
-  MessageCircle,
-} from 'lucide-react';
+import { Instagram, Mail, Youtube } from 'lucide-react';
 
 // 연락처 항목 정의 (링크는 나중에 추가 예정)
 const contactItems = [
-  {
-    name: 'GitHub',
-    icon: Github,
-    href: '#', // 나중에 추가
-  },
-  {
-    name: 'LinkedIn',
-    icon: Linkedin,
-    href: '#', // 나중에 추가
-  },
-  {
-    name: 'Facebook',
-    icon: Facebook,
-    href: '#', // 나중에 추가
-  },
   {
     name: 'Instagram',
     icon: Instagram,
@@ -40,16 +16,6 @@ const contactItems = [
   {
     name: 'YouTube',
     icon: Youtube,
-    href: '#', // 나중에 추가
-  },
-  {
-    name: 'Website',
-    icon: Globe,
-    href: '#', // 나중에 추가
-  },
-  {
-    name: 'Discord',
-    icon: MessageCircle,
     href: '#', // 나중에 추가
   },
 ];
