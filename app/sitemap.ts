@@ -1,6 +1,9 @@
 import { MetadataRoute } from 'next';
 import { getPublishedPosts } from '@/lib/notion';
 
+// sitemap 캐싱 설정 (1시간마다 재생성)
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 기본 URL - 환경 변수가 없으면 에러 발생
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -41,16 +44,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // 블로그 게시물 가져오기
-  const { posts } = await getPublishedPosts({ pageSize: 100 });
+  // 블로그 게시물 가져오기 (에러 처리 추가)
+  let blogPosts: MetadataRoute.Sitemap = [];
 
-  // 블로그 게시물 URL 생성
-  const blogPosts = posts.map((post) => ({
-    url: `${cleanBaseUrl}/blog/${post.slug}`,
-    lastModified: post.modifiedDate ? new Date(post.modifiedDate) : new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }));
+  try {
+    const { posts } = await getPublishedPosts({ pageSize: 100 });
+
+    // 블로그 게시물 URL 생성
+    blogPosts = posts.map((post) => ({
+      url: `${cleanBaseUrl}/blog/${post.slug}`,
+      lastModified: post.modifiedDate ? new Date(post.modifiedDate) : new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }));
+  } catch (error) {
+    // Notion API 호출 실패 시에도 정적 페이지는 반환
+    console.error('블로그 게시물을 가져오는 중 오류 발생:', error);
+  }
 
   // 정적 페이지와 블로그 게시물 결합
   return [...staticPages, ...blogPosts];
