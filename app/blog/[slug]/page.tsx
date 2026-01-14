@@ -5,9 +5,11 @@ import { CalendarDays, User } from 'lucide-react';
 import { getPostBySlug, getPublishedPosts } from '@/lib/notion';
 import { formatDate } from '@/lib/date';
 import { MDXRemote } from 'next-mdx-remote-client/rsc';
-import rehypeSanitize from 'rehype-sanitize';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypePrettycode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
+import remarkGfm from 'remark-gfm';
+import rehypeMdxToElement from '@/lib/rehype-mdx-to-element';
 import { compile } from '@mdx-js/mdx';
 import withSlugs from 'rehype-slug';
 import withToc from '@stefanprobst/rehype-extract-toc';
@@ -221,7 +223,30 @@ export default async function BlogPost({ params }: BlogPostProps) {
                   source={markdown}
                   options={{
                     mdxOptions: {
-                      rehypePlugins: [rehypeSanitize, rehypePrettycode, rehypeSlug],
+                      remarkPlugins: [remarkGfm],
+                      rehypePlugins: [
+                        rehypeMdxToElement, // MDX 특수 노드를 일반 element로 변환 (가장 먼저 실행)
+                        rehypeSlug, // 헤딩에 ID 추가
+                        rehypePrettycode, // 코드 하이라이팅
+                        [
+                          rehypeSanitize, // XSS 방지를 위한 보안 레이어 (마지막에 실행)
+                          {
+                            ...defaultSchema,
+                            tagNames: [
+                              ...(defaultSchema.tagNames || []),
+                              'del', // 취소선 태그
+                              'u', // 밑줄 태그
+                            ],
+                            attributes: {
+                              ...defaultSchema.attributes,
+                              // u 태그의 속성 허용 (필요시)
+                              u: ['className', 'id'],
+                              // del 태그의 속성 허용 (필요시)
+                              del: ['className', 'id'],
+                            },
+                          },
+                        ],
+                      ],
                     },
                   }}
                 />
