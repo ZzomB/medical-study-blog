@@ -17,11 +17,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Joos Blog',
-    default: 'Joos Blog',
+    template: '%s | I do dare',
+    default: 'I do dare',
   },
-  description: 'Next.js와 Notion을 활용한 기술 블로그',
-  keywords: ['Next.js', '프론트엔드', '웹개발', '코딩', '프로그래밍', '리액트'],
+  description: '나를 이루는 작은 도전들',
+  keywords: ['challenges', 'dare', 'travel', 'medical', 'disease', 'sing', 'vocal'],
   authors: [{ name: 'Joo', url: 'https://github.com/ZzomB' }],
   creator: 'Joo',
   publisher: 'Joo',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'ko_KR',
-    siteName: 'Joos Blog',
+    siteName: 'I do dare',
   },
   robots: {
     index: true,

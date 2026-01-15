@@ -8,7 +8,7 @@ export default function Header() {
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center justify-start">
             <Link href="/" className="text-xl font-semibold">
-              <span className="font-bold">주 블로그</span>
+              <span className="font-bold">I do dare</span>
             </Link>
           </div>
           <nav className="flex items-center justify-center gap-4">
