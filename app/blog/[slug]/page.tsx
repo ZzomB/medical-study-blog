@@ -10,6 +10,7 @@ import rehypePrettycode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import rehypeMdxToElement from '@/lib/rehype-mdx-to-element';
+import rehypeGoogleDriveEmbed from '@/lib/rehype-google-drive-embed';
 import { compile } from '@mdx-js/mdx';
 import withSlugs from 'rehype-slug';
 import withToc from '@stefanprobst/rehype-extract-toc';
@@ -226,6 +227,7 @@ export default async function BlogPost({ params }: BlogPostProps) {
                       remarkPlugins: [remarkGfm],
                       rehypePlugins: [
                         rehypeMdxToElement, // MDX 특수 노드를 일반 element로 변환 (가장 먼저 실행)
+                        rehypeGoogleDriveEmbed, // Google Drive embed 변환
                         rehypeSlug, // 헤딩에 ID 추가
                         rehypePrettycode, // 코드 하이라이팅
                         [
@@ -236,13 +238,28 @@ export default async function BlogPost({ params }: BlogPostProps) {
                               ...(defaultSchema.tagNames || []),
                               'del', // 취소선 태그
                               'u', // 밑줄 태그
+                              'iframe', // Google Drive embed용
                             ],
                             attributes: {
                               ...defaultSchema.attributes,
-                              // u 태그의 속성 허용 (필요시)
                               u: ['className', 'id'],
-                              // del 태그의 속성 허용 (필요시)
                               del: ['className', 'id'],
+                              div: ['className', 'style'],
+                              a: [...(defaultSchema.attributes?.a || []), 'target', 'rel'],
+                              iframe: [
+                                'src',
+                                'width',
+                                'height',
+                                'allow',
+                                'allowFullScreen',
+                                'frameBorder',
+                                'className',
+                                'style',
+                              ],
+                            },
+                            protocols: {
+                              ...defaultSchema.protocols,
+                              src: ['https'],
                             },
                           },
                         ],
