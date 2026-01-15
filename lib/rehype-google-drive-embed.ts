@@ -5,11 +5,7 @@ import { visit } from 'unist-util-visit';
 
 // Google Drive 파일 ID 추출
 function extractGoogleDriveFileId(url: string): string | null {
-  const patterns = [
-    /\/file\/d\/([a-zA-Z0-9_-]+)/,
-    /id=([a-zA-Z0-9_-]+)/,
-    /\/d\/([a-zA-Z0-9_-]+)/,
-  ];
+  const patterns = [/\/file\/d\/([a-zA-Z0-9_-]+)/, /id=([a-zA-Z0-9_-]+)/, /\/d\/([a-zA-Z0-9_-]+)/];
 
   for (const pattern of patterns) {
     const match = url.match(pattern);
@@ -73,17 +69,20 @@ function getEmbedNode(href: string): any | null {
   if (isGoogleDriveUrl(href)) {
     const fileId = extractGoogleDriveFileId(href);
     if (fileId) {
-      return createIframeNode(`https://drive.google.com/file/d/${fileId}/preview`, 'google-drive-embed');
+      return createIframeNode(
+        `https://drive.google.com/file/d/${fileId}/preview`,
+        'google-drive-embed'
+      );
     }
   }
-  
+
   if (isYouTubeUrl(href)) {
     const videoId = extractYouTubeVideoId(href);
     if (videoId) {
       return createIframeNode(`https://www.youtube.com/embed/${videoId}`, 'youtube-embed');
     }
   }
-  
+
   return null;
 }
 
@@ -100,7 +99,7 @@ export default function rehypeGoogleDriveEmbed() {
           node.properties.rel = 'noopener noreferrer';
         }
       }
-      
+
       // p 태그 안에 링크만 있는 경우
       if (node.tagName === 'p' && node.children?.length === 1) {
         const child = node.children[0];
